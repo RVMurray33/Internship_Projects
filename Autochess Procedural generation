@@ -1,0 +1,74 @@
+import pygame
+import random
+
+pygame.init()
+
+WIDTH, HEIGHT = 600, 600
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Auto Chess")
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+
+GRID_SIZE = 5
+TILE_SIZE = WIDTH // GRID_SIZE
+
+UNIT_TYPES = {
+    "Warrior": {"health": 100, "attack": 20},
+    "Archer": {"health": 80, "attack": 30},
+    "Mage": {"health": 60, "attack": 40}
+}
+
+class Unit:
+    def __init__(self, unit_type, x, y):
+        self.unit_type = unit_type
+        self.health = UNIT_TYPES[unit_type]["health"]
+        self.attack = UNIT_TYPES[unit_type]["attack"]
+        self.x = x
+        self.y = y
+
+    def draw(self, screen):
+        if self.unit_type == "Warrior":
+            color = BLUE
+        elif self.unit_type == "Archer":
+            color = RED
+        else:
+            color = WHITE
+        pygame.draw.rect(screen, color, (self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+def generate_units():
+    units = []
+    for i in range(GRID_SIZE):
+        for j in range(GRID_SIZE):
+            if random.random() < 0.2:  # 20% chance to place a unit
+                unit_type = random.choice(list(UNIT_TYPES.keys()))
+                units.append(Unit(unit_type, i, j))
+    return units
+
+def main():
+    clock = pygame.time.Clock()
+    units = generate_units()
+
+    running = True
+    while running:
+        SCREEN.fill(BLACK)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
+                pygame.draw.rect(SCREEN, WHITE, (i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE), 1)
+
+        for unit in units:
+            unit.draw(SCREEN)
+
+        pygame.display.flip()
+        clock.tick(30)
+
+if __name__ == "__main__":
+    main()
+    pygame.quit()
